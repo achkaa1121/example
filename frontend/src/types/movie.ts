@@ -51,3 +51,10 @@ export interface MoviesResponse {
   limit: number;
   totalPages: number;
 }
+export interface GetMoviesParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  genre?: string;
+  sort?: string;
+}
