@@ -21,10 +21,4 @@ export const getGenres = async (): Promise<string[]> => {
   const { data } = await api.get<string[]>("/movies/genres");
   return data;
 };
-export const getSort = async (
-  params: GetMoviesParams,
-): Promise<MoviesResponse> => {
-  const { data } = await api.get<MoviesResponse>("/movies", { params });
-  return data;
-};
 export default api;

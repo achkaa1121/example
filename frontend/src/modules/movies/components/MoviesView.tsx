@@ -1,12 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import {
-  Search,
-  ChevronLeft,
-  ChevronRight,
-  Film,
-  Navigation,
-} from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, Film } from "lucide-react";
 import { useMovies } from "@/modules/movies/hooks/useMovies";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,13 +25,14 @@ const MoviesView = () => {
   const [searchInput, setSearchInput] = useState(
     searchParams.get("search") ?? "",
   );
-
+  const [open, setOpen] = React.useState(false);
+  const sort = searchParams.get("sort") ?? "";
   const page = Number(searchParams.get("page") ?? "1");
   const search = searchParams.get("search") ?? "";
   const selectedGenre = searchParams.get("genre") ?? "";
-
   const { data, isLoading, isError, refetch } = useMovies({
     page,
+    sort: sort || "",
     limit: 20,
     search: search || undefined,
     genre: selectedGenre || undefined,
@@ -61,22 +56,21 @@ const MoviesView = () => {
       return next;
     });
   };
-
+  const handleSort = (value: string) => {
+    setParam({ sort: value, page: "1" });
+    setOpen(false);
+  };
+  const sortClear = () => {
+    setOpen(false);
+    setParam({ sort: "", page: "1" });
+  };
   const handleSearch = (e: { preventDefault(): void }) => {
     e.preventDefault();
     setParam({ search: searchInput, page: "1" });
   };
-
   const handleGenreSelect = (genre: string) => {
     setParam({ genre: selectedGenre === genre ? "" : genre, page: "1" });
   };
-  const [open, setOpen] = React.useState(false);
-  const [sort, setSort] = React.useState("");
-  const sortClear = () => {
-    setSort("");
-    setOpen(false);
-  };
-
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b">
@@ -105,14 +99,14 @@ const MoviesView = () => {
             <DropdownMenuContent className="w-32">
               <DropdownMenuGroup>
                 <DropdownMenuLabel>Sort by</DropdownMenuLabel>
-                <DropdownMenuRadioGroup value={sort} onValueChange={setSort}>
+                <DropdownMenuRadioGroup value={sort} onValueChange={handleSort}>
                   <DropdownMenuRadioItem value="popular">
                     Popularity
                   </DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="rating">
+                  <DropdownMenuRadioItem value="highest">
                     Rating
                   </DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="newness">
+                  <DropdownMenuRadioItem value="newest">
                     Latest
                   </DropdownMenuRadioItem>
                 </DropdownMenuRadioGroup>
@@ -156,20 +150,21 @@ const MoviesView = () => {
           ))}
         </div>
 
-        {(search || selectedGenre) && (
+        {(search || selectedGenre || sort) && (
           <div className="flex items-center gap-2 mb-4 text-sm text-muted-foreground">
             <span>Showing results for:</span>
             {search && <Badge variant="secondary">"{search}"</Badge>}
             {selectedGenre && (
               <Badge variant="secondary">{selectedGenre}</Badge>
             )}
+            {sort && <Badge variant={"secondary"}>{sort}</Badge>}
             <Button
               variant="link"
               size="sm"
               className="h-auto p-0 ml-1"
               onClick={() => {
                 setSearchInput("");
-                setParam({ search: "", genre: "", page: "1" });
+                setParam({ search: "", genre: "", page: "1", sort: "" });
               }}
             >
               Clear all
@@ -177,24 +172,25 @@ const MoviesView = () => {
           </div>
         )}
 
-        {isError && genreError && (
-          <div className="border border-destructive/50 text-destructive rounded-lg p-6 text-center mb-6">
-            <p className="font-medium">
-              Failed to load movies. Make sure the backend server is running.
-            </p>
-            <Button
-              variant="destructive"
-              onClick={() => refetch()}
-              className="mt-3"
-              size="sm"
-            >
-              Try Again
-            </Button>
-          </div>
-        )}
+        {isError ||
+          (genreError && (
+            <div className="border border-destructive/50 text-destructive rounded-lg p-6 text-center mb-6">
+              <p className="font-medium">
+                Failed to load movies. Make sure the backend server is running.
+              </p>
+              <Button
+                variant="destructive"
+                onClick={() => refetch()}
+                className="mt-3"
+                size="sm"
+              >
+                Try Again
+              </Button>
+            </div>
+          ))}
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {isLoading && genreLoading
+          {isLoading || genreLoading
             ? Array.from({ length: 20 }).map((_, i) => (
                 <MovieCardSkeleton key={i} />
               ))
