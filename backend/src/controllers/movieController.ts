@@ -1,6 +1,27 @@
 import { Request, Response } from "express";
+import User from "../models/User";
 import Movie from "../models/Movie";
+import bcrypt from "bcrypt";
+export const loginSignup = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email }, { email: 1, password: 1 });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const isMatch = await bcrypt.compare(password, user.password);
 
+    if (!isMatch) {
+      res.status(401).json({ message: "Invalid credentials" });
+    }
+    res.json({ message: "Login successful", userId: user._id });
+  } catch (e) {
+    console.error(e, "Server error");
+  }
+};
 export const getMovies = async (req: Request, res: Response): Promise<void> => {
   try {
     const page = Math.max(1, parseInt(req.query.page as string) || 1);
@@ -77,7 +98,6 @@ export const getGenres = async (req: Request, res: Response): Promise<void> => {
   try {
     const genres = await Movie.find().distinct("genres");
     res.json(genres);
-    console.log(genres);
   } catch (e) {
     console.error(e);
     res.status(500).json({ message: "Server error" });
