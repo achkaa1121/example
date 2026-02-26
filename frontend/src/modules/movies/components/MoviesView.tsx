@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { Search, ChevronLeft, ChevronRight, Film } from "lucide-react";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { Search, ChevronLeft, ChevronRight, Film, LogIn } from "lucide-react";
 import { useMovies } from "@/modules/movies/hooks/useMovies";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -119,6 +119,18 @@ const MoviesView = () => {
               </button>
             </DropdownMenuContent>
           </DropdownMenu>
+          <Link to="/user/login">
+            <Button
+              variant="outline"
+              size="icon"
+              className="relative group w-11"
+            >
+              <LogIn />
+              <div className="absolute max-w-11 left-0 top-full mt-2 hidden group-hover:block bg-white text-black text-sm px-1 py-1 rounded outline outline-1 outline-slate-100">
+                <p>Login</p>
+              </div>
+            </Button>
+          </Link>
           {total > 0 && (
             <span className="text-muted-foreground text-sm ml-auto hidden md:block">
               {total.toLocaleString()} movies

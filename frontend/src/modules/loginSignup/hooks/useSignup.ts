@@ -1,9 +1,10 @@
-import type { Login } from "@/types/loginSignup";
+import type { Signup } from "@/types/loginSignup";
 import { useMutation } from "@tanstack/react-query";
-export const useLogin = () => {
+
+export const useSignup = () => {
   return useMutation({
-    mutationFn: async (value: Login) => {
-      const response = await fetch("http://localhost:3000/user/login", {
+    mutationFn: async (value: Signup) => {
+      const response = await fetch("http://localhost:3000/user/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
