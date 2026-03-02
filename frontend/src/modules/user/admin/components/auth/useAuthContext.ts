@@ -1,13 +1,22 @@
 import { createContext, useContext } from "react";
 
-interface IUser {
-  id: string;
+interface IAuthContextValue {
+  user: {
+    id: string;
+  } | null;
+
+  login: () => void;
+  logout: () => void;
 }
 
-export const AuthContext = createContext<IUser | null>(null);
+export const AuthContext = createContext<IAuthContextValue | null>(null);
 
-export const useUser = () => {
-  const user = useContext(AuthContext);
+export const useAuth = () => {
+  const authContextValue = useContext(AuthContext);
 
-  return user;
+  if (!authContextValue) {
+    throw Error("Must be in provider");
+  }
+
+  return authContextValue;
 };

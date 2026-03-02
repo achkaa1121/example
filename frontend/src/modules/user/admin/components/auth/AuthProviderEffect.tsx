@@ -1,14 +1,12 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useUser } from "./useAuthContext";
+import { useAuth } from "./useAuthContext";
 
-export const AuthProvderEffect = () => {
-  const user = useUser();
+export const AuthProviderEffect = () => {
+  const { user } = useAuth();
 
-  console.log(user);
-
-  if (user?.id) {
+  if (user) {
     return <Outlet />;
   }
 
-  return <Navigate to={"admin/login"} />;
+  return <Navigate to={"/admin/login"} replace />;
 };
