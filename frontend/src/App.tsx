@@ -5,6 +5,7 @@ import MovieDetailPage from "@/pages/movies/MovieDetailPage";
 import { Login } from "./modules/user/loginSignup/components/Login";
 import { AdminLayout } from "./modules/user/admin/components/AdminLayout";
 import { AuthProviderEffect } from "./modules/user/admin/components/auth/AuthProviderEffect";
+import { Signup } from "./modules/user/loginSignup/components/Signup";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -21,6 +22,7 @@ const App = () => (
         <Route path="/movies/:id" element={<MovieDetailPage />} />
         <Route path="admin" element={<AdminLayout />}>
           <Route path="login" element={<Login />} />
+          <Route path="signup" element={<Signup />} />
           <Route element={<AuthProviderEffect />}>
             <Route path="create-movie" element={<div>create-movie</div>} />
             <Route path="get-comments" element={<div>get-movies</div>} />
